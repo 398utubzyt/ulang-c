@@ -1,0 +1,19 @@
+using Core;
+
+namespace Cooler
+{
+    struct Box
+    {
+        void* ptr;
+
+    }
+}
+
+namespace Coolest
+{
+    struct OtherFileDataInCooler
+    {
+        usize size;
+        u8*[5] data;
+    }
+}

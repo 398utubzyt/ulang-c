@@ -1,0 +1,27 @@
+using Core;
+
+namespace Cool
+{
+    struct OtherFileData
+    {
+        usize size;
+        u8* data;
+    }
+}
+
+namespace Cooler
+{
+    struct OtherFileDataInCooler
+    {
+        usize size;
+        u8* data;
+    }
+
+    bool is_greater_than(f32 a, f32 b) {
+        return a > b;
+    }
+
+    void coolVariadic(f32 float, i32 integer, ...) {
+        return a > b;
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Compiler": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\GitHub\\ulang\\Parser\\tests\\test.uproj --output D:\\GitHub\\ulang\\Parser\\tests\\bin\\"
+    }
+  }
+}

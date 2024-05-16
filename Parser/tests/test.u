@@ -1,0 +1,28 @@
+using Core;
+
+namespace Cool
+{
+    struct FloatBoolData
+    {
+        f32* floatPointer;
+        f32 instanceFunction(*self, f32 floatParam) {
+            if (floatPointer) {
+                return *floatPointer;
+            }
+            return 0.0;
+        }
+        bool someBoolean;
+    }
+
+    union IntFloat {
+        i32 integer;
+        f32 float;
+    }
+}
+
+namespace Cooler;
+
+union Meownyan {
+    i64 long;
+    f64 double;
+}
