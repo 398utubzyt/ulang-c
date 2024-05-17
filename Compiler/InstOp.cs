@@ -107,25 +107,28 @@ namespace Ulang
         public void ficvt(byte dest, byte from, byte precision) { Bytes.AddRange([71, dest, from, precision]); }
 
         public void fsqrt(byte dest, byte operand) { Bytes.AddRange([72, dest, operand]); }
-        public void fsin(byte dest, byte operand) { Bytes.AddRange([75, dest, operand]); }
-        public void fcos(byte dest, byte operand) { Bytes.AddRange([76, dest, operand]); }
-        public void ftan(byte dest, byte operand) { Bytes.AddRange([77, dest, operand]); }
-        public void fasin(byte dest, byte operand) { Bytes.AddRange([78, dest, operand]); }
-        public void facos(byte dest, byte operand) { Bytes.AddRange([79, dest, operand]); }
-        public void fatan(byte dest, byte operand) { Bytes.AddRange([80, dest, operand]); }
-        public void fsinh(byte dest, byte operand) { Bytes.AddRange([81, dest, operand]); }
-        public void fcosh(byte dest, byte operand) { Bytes.AddRange([82, dest, operand]); }
-        public void ftanh(byte dest, byte operand) { Bytes.AddRange([83, dest, operand]); }
-        public void fasinh(byte dest, byte operand) { Bytes.AddRange([84, dest, operand]); }
-        public void facosh(byte dest, byte operand) { Bytes.AddRange([85, dest, operand]); }
-        public void fatanh(byte dest, byte operand) { Bytes.AddRange([86, dest, operand]); }
-        public void fcbrt(byte dest, byte operand) { Bytes.AddRange([87, dest, operand]); }
-        public void fround(byte dest, byte operand) { Bytes.AddRange([88, dest, operand]); }
-        public void fceil(byte dest, byte operand) { Bytes.AddRange([89, dest, operand]); }
-        public void ffloor(byte dest, byte operand) { Bytes.AddRange([90, dest, operand]); }
-        public void fexp(byte dest, byte operand) { Bytes.AddRange([91, dest, operand]); }
-        public void fln(byte dest, byte operand) { Bytes.AddRange([93, dest, operand]); }
-        public void fpow(byte dest, byte op1, byte op2) { Bytes.AddRange([94, dest, op1, op2]); }
+        public void fcbrt(byte dest, byte operand) { Bytes.AddRange([73, dest, operand]); }
+        public void fsin(byte dest, byte operand) { Bytes.AddRange([74, dest, operand]); }
+        public void fcos(byte dest, byte operand) { Bytes.AddRange([75, dest, operand]); }
+        public void ftan(byte dest, byte operand) { Bytes.AddRange([76, dest, operand]); }
+        public void fasin(byte dest, byte operand) { Bytes.AddRange([77, dest, operand]); }
+        public void facos(byte dest, byte operand) { Bytes.AddRange([78, dest, operand]); }
+        public void fatan(byte dest, byte operand) { Bytes.AddRange([79, dest, operand]); }
+        public void fsinh(byte dest, byte operand) { Bytes.AddRange([80, dest, operand]); }
+        public void fcosh(byte dest, byte operand) { Bytes.AddRange([81, dest, operand]); }
+        public void ftanh(byte dest, byte operand) { Bytes.AddRange([82, dest, operand]); }
+        public void fasinh(byte dest, byte operand) { Bytes.AddRange([83, dest, operand]); }
+        public void facosh(byte dest, byte operand) { Bytes.AddRange([84, dest, operand]); }
+        public void fatanh(byte dest, byte operand) { Bytes.AddRange([85, dest, operand]); }
+        public void fround(byte dest, byte operand) { Bytes.AddRange([86, dest, operand]); }
+        public void fceil(byte dest, byte operand) { Bytes.AddRange([87, dest, operand]); }
+        public void ffloor(byte dest, byte operand) { Bytes.AddRange([88, dest, operand]); }
+        public void fexp(byte dest, byte operand) { Bytes.AddRange([89, dest, operand]); }
+        public void fln(byte dest, byte operand) { Bytes.AddRange([90, dest, operand]); }
+        public void fpow(byte dest, byte op1, byte op2) { Bytes.AddRange([91, dest, op1, op2]); }
+
+        public void min(byte op1, byte op2) { Bytes.AddRange([96, op1, op2]); }
+        public void max(byte op1, byte op2) { Bytes.AddRange([97, op1, op2]); }
 
         public void call(ushort func)
         {
