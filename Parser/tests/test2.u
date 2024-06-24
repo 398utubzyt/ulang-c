@@ -17,7 +17,7 @@ namespace Cooler
         u8* data;
     }
 
-    bool is_greater_than(f32 a, f32 b) {
+    b8 is_greater_than(f32 a, f32 b) {
         return a > b;
     }
 

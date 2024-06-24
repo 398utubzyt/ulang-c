@@ -12,8 +12,9 @@ namespace Ulang.Layouts
 
         public readonly bool Write(BinaryWriter bw)
         {
-            bw.Write((ushort)Code.Length);
-            bw.Write(Code);
+            bw.Write((ushort)(Code?.Length ?? 0));
+            if (Code != null)
+                bw.Write(Code);
             return true;
         }
 

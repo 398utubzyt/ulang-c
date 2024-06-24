@@ -20,6 +20,7 @@ namespace Ulang.Layouts
             bw.Write((byte)Params.Length);
             bw.Write(BodyId);
             bw.WriteUtf8(Name);
+            bw.WriteArray(Params);
             return true;
         }
 

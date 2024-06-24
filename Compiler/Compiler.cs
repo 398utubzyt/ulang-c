@@ -26,7 +26,13 @@ namespace Ulang
             { "f32", TypeId.F32 },
             { "f64", TypeId.F64 },
             { "f128", TypeId.F128 },
-            { "bool", TypeId.Bool },
+            { "b8", TypeId.B8 },
+            { "b16", TypeId.B16 },
+            { "b32", TypeId.B32 },
+            { "b64", TypeId.B64 },
+            { "c8", TypeId.C8 },
+            { "c16", TypeId.C16 },
+            { "c32", TypeId.C32 },
             { "isize", TypeId.ISize },
             { "usize", TypeId.USize },
             { "void", TypeId.Void },
@@ -61,18 +67,20 @@ namespace Ulang
             return false;
         }
 
-        private static bool GetNumberLiteralInfo(ReadOnlySpan<char> buffer, Span<byte> bytes, out NumberLiteralType type, out NumberLiteralFormat format)
+        public static bool GetNumberLiteralInfo(ReadOnlySpan<char> buffer, Span<byte> bytes, out NumberLiteralType type, out NumberLiteralFormat format)
         {
             type = NumberLiteralType.Unknown;
             format = NumberLiteralFormat.Decimal;
 
             int precInd = buffer.LastIndexOf("i");
-            if (precInd > 0)
+            if (precInd > 0 && !buffer.Contains('.'))
                 type = NumberLiteralType.Signed;
-            else if ((precInd = buffer.LastIndexOf("u")) > 0)
+            else if ((precInd = buffer.LastIndexOf("u")) > 0 && !buffer.Contains('.'))
                 type = NumberLiteralType.Unsigned;
-            else if ((precInd = buffer.LastIndexOf("f")) > 0)
+            else if ((precInd = buffer.LastIndexOf("f")) > 0 || buffer.Contains('.'))
                 type = NumberLiteralType.Float;
+            else
+                type = NumberLiteralType.Signed;
 
             if (precInd > 0 && precInd != buffer.Length - 1)
             {
@@ -105,32 +113,9 @@ namespace Ulang
 
 
             if (buffer.StartsWith("0x"))
-            {
                 format = NumberLiteralFormat.Hexadecimal;
-                //if (buffer.Length > 18)
-                //{
-                //    PrintError("Hexadecimal literal cannot have more than 16 nibbles.");
-                //    return false;
-                //}
-                //if (!HexToDec(buffer[2..], numbuf, out int len))
-                //{
-                //    PrintError("Failed to parse hexadecimal literal.");
-                //    return false;
-                //}
-            } else if (buffer.StartsWith("0b"))
-            {
+            else if (buffer.StartsWith("0b"))
                 format = NumberLiteralFormat.Binary;
-                //if (buffer.Length > 130)
-                //{
-                //    PrintError("Binary literal cannot have more than 128 bits.");
-                //    return false;
-                //}
-                //if (!BinToDec(buffer[2..], numbuf, out int len))
-                //{
-                //    PrintError("Failed to parse binary literal.");
-                //    return false;
-                //}
-            }
 
             if (precInd > 0)
                 buffer[..precInd].CopyTo(numbuf);
@@ -213,8 +198,8 @@ namespace Ulang
                     return false;
                 case NumberLiteralType.Float:
                 case NumberLiteralType.F64:
-                    if (!double.TryParse(num, CultureInfo.InvariantCulture.NumberFormat, out double f64))
-                        BitConverter.TryWriteBytes(bytes, f64);
+                    if (double.TryParse(num, CultureInfo.InvariantCulture.NumberFormat, out double f64))
+                        return BitConverter.TryWriteBytes(bytes, f64);
                     PrintError("Literal is not a valid f64 lvalue.");
                     return false;
                 case NumberLiteralType.F128:
@@ -832,13 +817,39 @@ namespace Ulang
 
                 using FileStream fs = new FileStream(src[fn.FileId].Path, FileMode.Open, FileAccess.Read);
                 using StreamReader sr = new StreamReader(fs);
+                using CgContext cg = new CgContext();
 
                 CodeBodyLayout body = mod._bodies[fn.BodyId];
-                if (!Codegen.Generate(ref mod, sr, _args, src[fn.FileId].Tokens, ref fn, ref body))
-                    return false;
 
+                if (!cg.Process(sr, mod, mod._functions[i], src[fn.FileId].Tokens.AsSpan()[body.TokenId..]))
+                {
+                    // Print line number here
+                    long pos = cg.ErrorPosition;
+                    fs.Seek(0, SeekOrigin.Begin);
+                    sr.DiscardBufferedData();
+
+                    int line = 0, fpos = 0;
+                    string str;
+                    while ((str = sr.ReadLine()) != null)
+                    {
+                        fpos += str.Length;
+                        if (fpos >= pos)
+                            break;
+                        ++line;
+                    }
+
+                    PrintError($"    at \"{src[fn.FileId].Path}:{line}\" (char {cg.ErrorPosition})\n{cg.ErrorMessage}");
+                    return false;
+                } else
+                {
+                    body.Code = new byte[cg.ByteCount];
+                    cg.CopyTo(body.Code);
+                    Console.WriteLine(string.Join(' ', body.Code));
+                }
+
+                //body.Code = new byte[cg.ByteCount];
+                //cg.CopyTo(body.Code);
                 mod._bodies[fn.BodyId] = body;
-                mod._functions[i] = fn;
             }
             return true;
         }

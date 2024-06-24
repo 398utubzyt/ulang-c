@@ -180,12 +180,24 @@ namespace Ulang
 
         private static bool AnalyzeMoreLiterals(StreamReader r, Span<char> buffer, long pos, List<Token> tokens)
         {
-            if (double.TryParse(buffer, NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out _) ||
-                (buffer.StartsWith("0x") && Int128.TryParse(buffer[..2], NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out _)) ||
-                (buffer.StartsWith("0b") && Int128.TryParse(buffer[..2], NumberStyles.AllowBinarySpecifier, CultureInfo.InvariantCulture, out _)))
+            ReadOnlySpan<string> suffixes = ["i8", "i16", "i32", "i64", "i128", "u8", "u16", "u32", "u64", "u128", "f16", "f32", "f64", "f128"];
+            int precIndex = buffer.LastIndexOfAny(suffixes, out int which);
+            if (precIndex == -1)
+                precIndex = buffer.Length;
+
+            int end = buffer.IndexOf('\0');
+            if (end == -1)
+                end = buffer.Length;
+
+            if ((precIndex == end) || (which != -1 && precIndex + suffixes[which].Length == end))
             {
-                tokens.Add(Token.MakeLiteral(r, pos, buffer.Length, LiteralType.Number));
-                return true;
+                if (double.TryParse(buffer[..precIndex], NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out _) ||
+                    (buffer.StartsWith("0x") && Int128.TryParse(buffer[2..precIndex], NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out _)) ||
+                    (buffer.StartsWith("0b") && Int128.TryParse(buffer[2..precIndex], NumberStyles.AllowBinarySpecifier, CultureInfo.InvariantCulture, out _)))
+                {
+                    tokens.Add(Token.MakeLiteral(r, pos, precIndex + (which == -1 ? 0 : suffixes[which].Length), LiteralType.Number));
+                    return true;
+                }
             }
 
             if (buffer.Count('\"') == 2 && buffer[0] == '\"' && buffer[^1] == '\"')
@@ -210,7 +222,7 @@ namespace Ulang
         }
 
         private static bool Analyze(StreamReader r, Span<char> buffer, ref long pos, List<Token> tokens)
-            => AnalyzeNoIdentifier(r, buffer, pos, tokens) || AnalyzeIdentifier(r, buffer, pos, tokens) || AnalyzeMoreLiterals(r, buffer, pos, tokens);
+            => AnalyzeNoIdentifier(r, buffer, pos, tokens) || AnalyzeMoreLiterals(r, buffer, pos, tokens) || AnalyzeIdentifier(r, buffer, pos, tokens);
 
         private static bool NoWhitespace(StreamReader r, Span<char> buffer, List<Token> tokens, ref long pos)
         {
@@ -226,8 +238,12 @@ namespace Ulang
             int p = 0;
             while (p < len)
             {
-                if (AnalyzeNoIdentifier(r, buffer[p..len], pos + p, tokens))
-                    goto SuccessfulFind;
+                ++p;
+            }
+
+            p = 0;
+            while (p < len)
+            {
                 ++p;
             }
 
@@ -237,12 +253,8 @@ namespace Ulang
             {
                 if (AnalyzeIdentifier(r, buffer[p..len], pos + p, tokens))
                     goto SuccessfulFind;
-                ++p;
-            }
-
-            p = 0;
-            while (p < len)
-            {
+                if (AnalyzeNoIdentifier(r, buffer[p..len], pos + p, tokens))
+                    goto SuccessfulFind;
                 if (AnalyzeMoreLiterals(r, buffer[p..len], pos + p, tokens))
                     goto SuccessfulFind;
                 ++p;

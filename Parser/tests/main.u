@@ -1,5 +1,5 @@
 using Core;
 
 i32 main() {
-	return 0;
+	return 0i32;
 }

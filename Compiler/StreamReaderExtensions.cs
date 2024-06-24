@@ -17,6 +17,11 @@ namespace Ulang
             reader.DiscardBufferedData();
             return reader.BaseStream.Seek(token.Position, SeekOrigin.Begin);
         }
+        public static long Goto(this StreamReader reader, ExprItem item)
+        {
+            reader.DiscardBufferedData();
+            return reader.BaseStream.Seek(item.Position, SeekOrigin.Begin);
+        }
 
         public static int Read(this StreamReader reader, Span<char> span, int max)
         {

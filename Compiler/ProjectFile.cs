@@ -33,6 +33,7 @@ namespace Ulang
 
         public string Id;
         public string Name;
+        public string Authors;
         public Version Version;
 
         // Compiler Settings

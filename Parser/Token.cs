@@ -53,6 +53,12 @@ namespace Ulang
         public static Token MakeComment(StreamReader r, long start, int length)
             => new Token { Type = TokenType.Comment, Position = start, Length = length };
 
+        public readonly bool IsKeyword(KeywordType type) => Type == TokenType.Keyword && Data.Keyword == type;
+        public readonly bool IsSeparator(SeparatorType type) => Type == TokenType.Separator && Data.Separator == type;
+        public readonly bool IsOperator(OperatorType type) => Type == TokenType.Separator && Data.Operator == type;
+        public readonly bool IsLiteral(LiteralType type) => Type == TokenType.Literal && Data.Literal == type;
+        public readonly bool IsIdentifier() => Type == TokenType.Identifier;
+
         public override readonly string ToString()
         {
             return $"{Type} ({Position}-{Position + Length}): {

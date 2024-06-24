@@ -32,6 +32,11 @@ namespace Ulang.Layouts
         }
         public static TypeLayout New(int file, int token) { return default; }
 
+        public static bool operator ==(TypeLayout a, TypeLayout b)
+            => a.Id == b.Id && a.Indir == b.Indir && a.StructId == b.StructId && a.VecCount == b.VecCount && a.VecIndir == b.VecIndir;
+        public static bool operator !=(TypeLayout a, TypeLayout b)
+            => a.Id != b.Id || a.Indir != b.Indir || a.StructId != b.StructId || a.VecCount != b.VecCount || a.VecIndir != b.VecIndir;
+
         public readonly void Print(IRModule mod, TextWriter sw)
         {
             if (Id == TypeId.UserStruct)
@@ -53,5 +58,11 @@ namespace Ulang.Layouts
             for (int j = 0; j < Indir; ++j)
                 sw.Write('*');
         }
+
+        public override readonly bool Equals(object obj)
+            => obj is TypeLayout l && this == l;
+
+        public override readonly int GetHashCode()
+            => Id.GetHashCode();
     }
 }
